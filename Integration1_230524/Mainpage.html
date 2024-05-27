@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Mender</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            padding: 4%;
+            background-color: #f5f7fa;
+            font-family: 'Roboto', sans-serif;
+        }
+        .container {
+            border: 1px solid black;
+            border-radius: 5px;
+            display: flex;
+            padding: 2% 22%  0 22%;
+            background-color: #e8edf3;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            width: 100%;
+            border-bottom: 2px solid black;
+            margin-bottom: 20px;
+            padding: 0 15% 0 15%;
+        }
+        .header img {
+            width: 60%;
+            margin-top: -2%;
+            height: auto;
+        }
+        .contents {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom:2%;
+        }
+        .contents button {
+            width: 40%;
+            background-color: #216ecd;
+            color: #e8edf3;
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .contents button:hover {
+            background-color: #104b93;
+        }
+        .contents a {
+            color: #e8edf3;
+            text-decoration: none;
+            display: block;
+        }
+        .footer {
+            text-align: center;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+        .footer a {
+            color: #216ecd;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="Mindmender.png" alt="Mind Mender Logo">
+        </div>
+        <div class="contents">
+            <button class="help" id="help">Help</button>
+            <button class="login"><a href="FrontPage.html">Continue Chatting</a></button>
+        </div>
+    </div>
+</body>
+</html>

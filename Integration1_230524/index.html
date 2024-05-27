@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Mender Chatbot</title>
+    <style>
+        body {
+            padding: 4%;
+            background-color: #f0f0f0;
+        }
+        .chat-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .old-conversations {
+            width: 20%;
+            border: 1px solid black;
+            border-radius: 5px;
+            background-color: white;
+            padding: 10px;
+            height: 80vh;
+            overflow-y: auto;
+        }
+        .chat-section {
+            width: 75%;
+            border: 1px solid black;
+            border-radius: 5px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid black;
+            padding: 10px;
+            background-color: #e8edf3;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .chat-input {
+            display: flex;
+            border-top: 1px solid black;
+            padding: 10px;
+            background-color: #e8edf3;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .chat-input button {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: green;
+            color: white;
+            cursor: pointer;
+        }
+        .chat-input button:hover {
+            background-color: darkgreen;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message.user {
+            text-align: right;
+        }
+        .message.bot {
+            text-align: left;
+        }
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .new-conversation {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid black;
+            border-radius: 4px;
+            background-color: blue;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+        }
+        .new-conversation:hover {
+            background-color: darkblue;
+        }
+        .logout-button {
+            margin-left: 10px;
+            padding: 10px;
+            border: 1px solid black;
+            border-radius: 4px;
+            background-color: red;
+            color: white;
+            cursor: pointer;
+        }
+        .logout-button:hover {
+            background-color: darkred;
+        }
+        .delete-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: red;
+        }
+        .delete-button:hover {
+            color: darkred;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="old-conversations" id="old-conversations">
+            <h3>Old Conversations</h3>
+            <!-- Old conversations will be dynamically added here -->
+        </div>
+        <div class="chat-section" id="chat-section">
+            <div class="chat-header">
+                <div>
+                    <img class="avatar" src="Mindmender.png" alt="Avatar">
+                    <span>Mind Mender</span>
+                </div>
+                <div>
+                    <button class="new-conversation" onclick="startNewConversation()">New Conversation</button>
+                    <button class="logout-button" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <!-- Chat messages will be dynamically added here -->
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chat-input" placeholder="Type your message...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let oldConversations = JSON.parse(localStorage.getItem('oldConversations')) || [];
+        let currentConversation = [];
+
+        function displayOldConversations() {
+            const oldConversationsContainer = document.getElementById('old-conversations');
+            oldConversationsContainer.innerHTML = '<h3>Old Conversations</h3>';
+            oldConversations.forEach((conversation, index) => {
+                const convoElement = document.createElement('div');
+                convoElement.classList.add('old-conversation');
+                convoElement.style.display = 'flex';
+                convoElement.style.justifyContent = 'space-between';
+                convoElement.style.alignItems = 'center';
+                convoElement.innerHTML = `Conversation ${index + 1} <button class="delete-button" onclick="deleteConversation(${index})">&#128465;</button>`;
+                convoElement.onclick = () => loadConversation(index);
+                oldConversationsContainer.appendChild(convoElement);
+            });
+        }
+
+        function loadConversation(index) {
+            const messagesContainer = document.getElementById('chat-messages');
+            messagesContainer.innerHTML = '';
+            oldConversations[index].forEach(message => {
+                addMessage(message.text, message.sender);
+            });
+        }
+
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            messageElement.innerText = text;
+            messagesContainer.appendChild(messageElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (text) {
+                addMessage(text, 'user');
+                currentConversation.push({ text, sender: 'user' });
+                input.value = '';
+
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/generate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ seed: text, n_chars: 100 }),  // Correcting n_words to n_chars
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    const botResponse = data.generated_text;
+                    addMessage(botResponse, 'bot');
+                    currentConversation.push({ text: botResponse, sender: 'bot' });
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    addMessage("Error: Unable to fetch response", 'bot');
+                }
+            }
+        }
+
+        function startNewConversation() {
+            if (currentConversation.length > 0) {
+                oldConversations.push(currentConversation);
+                localStorage.setItem('oldConversations', JSON.stringify(oldConversations));
+                currentConversation = [];
+                document.getElementById('chat-messages').innerHTML = '';
+                displayOldConversations();
+            }
+        }
+
+        function deleteConversation(index) {
+            oldConversations.splice(index, 1);
+            localStorage.setItem('oldConversations', JSON.stringify(oldConversations));
+            displayOldConversations();
+        }
+
+        function logout() {
+            localStorage.removeItem('oldConversations');  // Clear local storage on logout if desired
+            window.location.href = 'Frontpage.html';
+        }
+
+        displayOldConversations();
+    </script>
+</body>
+</html>

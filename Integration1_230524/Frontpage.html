@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Mender</title>
+    <style>
+        body {
+            padding: 4%;
+            background-color: white;
+        }
+        .container {
+            border: 1px solid black;
+            border-radius: 5px;
+            display: flex;
+            padding: 2%;
+            background-color:#e8edf3;
+        }
+        .left {
+            width: 50%;
+            border-right: 2px solid black;
+            justify-content: center;
+            display: flex;
+            align-items: center;
+        }
+        .content {
+            font-size: 1.6rem;
+            text-align: center;
+        }
+        .type{
+            margin-left: -100%;
+            font-size:1.8rem;
+            color:black;
+        }
+        .right {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login {
+            border: 2px solid black;
+            border-radius: 10px;
+            width: 100%;
+            font-size: 20px;
+            margin: 10%;
+            width: 50%;
+            justify-content: center;
+            background-color: white;
+        }
+        .login_s{
+            border: 2px solid black;
+            border-radius: 10px;
+            width: 100%;
+            font-size: 20px;
+            margin: 4%;
+            width: 50%;
+            background-color: white;
+        }
+        .header {
+            border-bottom: 1px solid black;
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 5%;
+            width: 90%;
+            margin-left: 5%;
+        }
+        .image{
+            height:80%;
+            width:80%;
+        }
+        .inside {
+            font-size: 19px;
+            margin-bottom: 20px;
+            justify-content: center;
+            width: 90%;
+            margin-left: 5%;
+            border-bottom: 1px solid black;
+        }
+        .inside input {
+            width: 90%;
+            margin: 2% 0 2% 3%;
+            padding: 8px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+        }
+        .footer {
+            text-align: center;
+            width: 90%;
+            margin-left: 5%;
+            margin-bottom: 5%;
+        }
+        .inside .submit {
+            width: 30%;
+            margin-left: 35%;
+            margin-bottom: 5%;
+            padding: 10px;
+            color: white;
+            background-color: green;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .submit:hover {
+            background-color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <div class="content">
+                <div id="typewriter" class="type"></div>
+                <img class="image" src ="Mindmender.png">
+            </div>
+        </div>
+        <div class="right">
+            <div class="login">
+                <div class="header">
+                    <h2>Login</h2>
+                </div>
+                <div class="inside">
+                    Email id: <br>
+                    <input type="text" id="email" name="email" placeholder="Enter the Email ID"><br>
+                    Password: <br>
+                    <input type="password" id="password" name="password" placeholder="Enter the Password"><br>
+                    <button class="submit" onclick="login()">Sign in</button>
+                </div>
+                <div class="footer">
+                    No account? <a href="#" onclick="showSignUpForm()">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sign up form  -->
+
+    <div class="container" id="signup-form" style="display: none;">
+        <div class="left">
+            <div class="content">
+                <div id="typewriter_s" class="type"></div>
+                <img class="image" src ="Mindmender.png">
+            </div>
+        </div>
+        <div class="right" >
+            <div class="login_s">
+                <div class="header">
+                    <h2>Sign Up</h2>
+                </div>
+                <div class="inside">
+                    Email id: <br>
+                    <input type="text" id="email_s" name="email" placeholder="Enter the Email ID"><br>
+                    Password: <br>
+                    <input type="password" id="password_s" name="password" placeholder="Enter the Password"><br>
+                    Comfirm Password: <br>
+                    <input type="password" id="new_password" name="new_password" placeholder="Re-Enter the Password"><br>
+                    <button class="submit" onclick="signUp()">Sign Up</button>
+                </div>
+                <div class="footer">
+                    Have an account? <a href="#" onclick="showLoginForm()">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const users = JSON.parse(localStorage.getItem('users')) || {};
+
+        
+        function showSignUpForm() {
+            document.querySelector('.container').style.display = 'none';
+            document.getElementById('signup-form').style.display = 'flex';
+            typeWriter('typewriter_s', "Welcome to");
+        }
+
+        
+        function showLoginForm() {
+            document.querySelector('.container').style.display = 'flex';
+            document.getElementById('signup-form').style.display = 'none';
+            typeWriter('typewriter', "Welcome to");
+        }
+
+        
+        function signUp() {
+            const email = document.getElementById('email_s').value;
+            const password = document.getElementById('password_s').value;
+            const re_password = document.getElementById('new_password').value;
+
+            if (email && password && re_password) {
+                if(password == re_password){
+                    users[email] = password;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    alert('User registered successfully!');
+                    showLoginForm();
+                } 
+                else{
+                    alert(password)
+                    alert(re_password)
+                    alert('Incorrect password.')
+                }
+            }
+            else {
+                alert(email)
+                alert(password)
+                alert('Please fill in both fields.');
+            }
+        }
+
+        
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (users[email] && users[email] === password) {
+                alert('Login successful!');
+                window.location.href='index.html';
+            } else {
+                alert('Invalid credentials. Please try again.');
+            }
+        }
+
+        
+        function typeWriter(elementId, text) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '';
+            let index = 0;
+            const speed = 100;
+
+            function writeChar() {
+                if (index < text.length) {
+                    element.innerHTML += text.charAt(index);
+                    index++;
+                    setTimeout(writeChar, speed);
+                }
+            }
+            writeChar();
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            typeWriter('typewriter', "Welcome to");
+        });
+    </script>
+</body>
+</html>
